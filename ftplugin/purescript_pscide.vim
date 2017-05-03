@@ -64,16 +64,16 @@ function! PSCIDEstart(silent)
   let dir = s:findRoot()
 
   if empty(dir)
-    echom "No psc-package.json or bower.json found, couldn't start psc-ide-server"
+    echom "No psc-package.json or bower.json found, couldn't start purs ide server"
     return
   endif
 
-  call s:log("PSCIDEstart: Starting psc-ide-server at " . dir . " on port " . g:psc_ide_server_port, loglevel)
+  call s:log("PSCIDEstart: Starting purs ide server at " . dir . " on port " . g:psc_ide_server_port, loglevel)
 
   if has('win16') || has('win32') || has('win64')
-    let command = "start /b psc-ide-server " . dir . "/src/**/*.purs " . dir . "/bower_components/**/*.purs -p " . g:psc_ide_server_port . " -d " . dir
+    let command = "start /b purs ide server " . dir . "/src/**/*.purs " . dir . "/bower_components/**/*.purs -p " . g:psc_ide_server_port . " -d " . dir
   else
-    let command = "psc-ide-server \"src/**/*.purs\" \"bower_components/**/*.purs\" -p " . g:psc_ide_server_port . " -d " . dir . " > /dev/null &"
+    let command = "purs ide server \"src/**/*.purs\" \"bower_components/**/*.purs\" -p " . g:psc_ide_server_port . " -d " . dir . " > /dev/null &"
   endif
   let resp = system(command)
 
@@ -130,7 +130,7 @@ function! PSCIDEend()
     return
   endif
   let input = {'command': 'quit'}
-  let resp = s:mysystem("psc-ide-client -p " . g:psc_ide_server_port, s:jsonEncode(input))
+  let resp = s:mysystem("purs ide client -p " . g:psc_ide_server_port, s:jsonEncode(input))
   let s:pscidestarted = 0
   let s:projectvalid = 0
 endfunction
@@ -750,7 +750,7 @@ function! s:callPscIde(input, errorm, isRetry)
     let cwdcommand = {'command': 'cwd'}
 
     call s:log("callPscIde: No server found, looking for external server", 1)
-    let cwdresp = s:mysystem("psc-ide-client -p " . g:psc_ide_server_port, s:jsonEncode(cwdcommand))
+    let cwdresp = s:mysystem("purs ide client -p " . g:psc_ide_server_port, s:jsonEncode(cwdcommand))
     call s:log("callPscIde: Raw response of trying to reach external server: " . cwdresp, 1)
     let cwdrespDecoded = PscIdeDecodeJson(s:StripNewlines(cwdresp))
     call s:log("callPscIde: Decoded response of trying to reach external server: " 
@@ -776,7 +776,7 @@ function! s:callPscIde(input, errorm, isRetry)
     endif
 
     call s:log("callPscIde: Trying to reach server again", 1)
-    let cwdresp2 = s:mysystem("psc-ide-client -p " . g:psc_ide_server_port, s:jsonEncode(cwdcommand))
+    let cwdresp2 = s:mysystem("purs ide client -p " . g:psc_ide_server_port, s:jsonEncode(cwdcommand))
     call s:log("callPscIde: Raw response of trying to reach server again: " . cwdresp2, 1)
     let cwdresp2Decoded = PscIdeDecodeJson(s:StripNewlines(cwdresp2))
     call s:log("callPscIde: Decoded response of trying to reach server again: " 
@@ -794,7 +794,7 @@ function! s:callPscIde(input, errorm, isRetry)
   endif
 
   let enc = s:jsonEncode(a:input)
-  let resp = s:mysystem("psc-ide-client -p " . g:psc_ide_server_port, enc)
+  let resp = s:mysystem("purs ide client -p " . g:psc_ide_server_port, enc)
   call s:log("callPscIde: Raw response: " . resp, 3)
 
   if resp =~? "connection refused"  "TODO: This check is probably not crossplatform
